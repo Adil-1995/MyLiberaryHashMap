@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -24,6 +23,9 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.JSpinner;
+import javax.swing.event.AncestorListener;
+import javax.swing.event.AncestorEvent;
 
 public class UI extends JFrame {
 
@@ -39,19 +41,27 @@ public class UI extends JFrame {
 	protected JButton btnSalir;
 	protected JButton btnBorrar;
 	protected JButton btnConsultar;
+	protected JPanel panelEstenteria;
+	protected JPanel panelLibro;
 	protected JRadioButton rdbtnCartone;
 	protected JRadioButton rdbtnRustica;
 	protected JRadioButton rdbtnGrapada;
 	protected JRadioButton rdbtnEspiral;
 	protected JRadioButton rdbtnReedicion;
 	protected JRadioButton rdbtnNovidad;
+	protected JSpinner Spinner;
+	protected JButton btnAnadirCantidad;
+	protected JButton btnBorrarCantidad;
+	protected JButton btnEditar;
+	protected JTabbedPane tabbedPane;
+	
 
 	/**
 	 * Create the frame.
 	 */
 	public UI() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 604, 418);
+		setBounds(100, 100, 696, 500);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -66,7 +76,7 @@ public class UI extends JFrame {
 		lblLbreriaAdil.setFont(new Font("Tahoma", Font.BOLD, 20));
 		panelArriba.add(lblLbreriaAdil);
 
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBackground(Color.GRAY);
 		contentPane.add(tabbedPane, BorderLayout.CENTER);
 		
@@ -74,7 +84,7 @@ public class UI extends JFrame {
 		JLabel labelicon = new JLabel("");
 		labelicon.setIcon(new ImageIcon(UI.class.getResource("/image/libro.png")));
 
-		JPanel panelLibro = new JPanel();
+		panelLibro = new JPanel();
 		panelLibro.setBackground(Color.CYAN);
 		tabbedPane.addTab("LIBRO", null, panelLibro, null);
 
@@ -104,6 +114,7 @@ public class UI extends JFrame {
 		textEditorial.setColumns(10);
 
 		textISBN = new JTextField();
+		textISBN.setForeground(Color.RED);
 		textISBN.setColumns(10);
 
 		textPrecio = new JTextField();
@@ -125,13 +136,30 @@ public class UI extends JFrame {
 
 		JLabel lblEstado = new JLabel("Estado:");
 		lblEstado.setFont(new Font("Tahoma", Font.BOLD, 12));
+		
+		JLabel lblCantidad = new JLabel("Cantidad:");
+		lblCantidad.setFont(new Font("Tahoma", Font.BOLD, 11));
+		
+		Spinner = new JSpinner();
 
 		GroupLayout gl_panelLibro = new GroupLayout(panelLibro);
 		gl_panelLibro.setHorizontalGroup(
 			gl_panelLibro.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panelLibro.createSequentialGroup()
-					.addGap(54)
-					.addGroup(gl_panelLibro.createParallelGroup(Alignment.TRAILING, false)
+					.addGap(69)
+					.addComponent(lblEstado)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(panelEstado, GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE)
+					.addContainerGap())
+				.addGroup(gl_panelLibro.createSequentialGroup()
+					.addGap(60)
+					.addComponent(lblFortmato)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(panelFormato, GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE)
+					.addContainerGap())
+				.addGroup(gl_panelLibro.createSequentialGroup()
+					.addGap(66)
+					.addGroup(gl_panelLibro.createParallelGroup(Alignment.TRAILING)
 						.addGroup(gl_panelLibro.createParallelGroup(Alignment.TRAILING, false)
 							.addGroup(gl_panelLibro.createSequentialGroup()
 								.addGroup(gl_panelLibro.createParallelGroup(Alignment.TRAILING)
@@ -142,26 +170,18 @@ public class UI extends JFrame {
 							.addComponent(label, Alignment.LEADING))
 						.addComponent(lblEditorial)
 						.addComponent(lblAutor)
-						.addComponent(lblFortmato)
-						.addComponent(lblEstado))
+						.addComponent(lblCantidad))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_panelLibro.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panelLibro.createSequentialGroup()
-							.addComponent(panelFormato, GroupLayout.DEFAULT_SIZE, 438, Short.MAX_VALUE)
-							.addContainerGap())
-						.addGroup(gl_panelLibro.createSequentialGroup()
-							.addComponent(panelEstado, GroupLayout.DEFAULT_SIZE, 438, Short.MAX_VALUE)
-							.addContainerGap())
-						.addGroup(gl_panelLibro.createSequentialGroup()
-							.addGroup(gl_panelLibro.createParallelGroup(Alignment.LEADING)
-								.addComponent(textPrecio, GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE)
-								.addComponent(textEditorial, GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE)
-								.addComponent(textAutor, GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE)
-								.addComponent(textTitulo, GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE)
-								.addComponent(textISBN, GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE))
-							.addGap(99)
-							.addComponent(labelicon, GroupLayout.PREFERRED_SIZE, 161, GroupLayout.PREFERRED_SIZE)
-							.addGap(74))))
+						.addComponent(Spinner, GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE)
+						.addComponent(textPrecio, GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE)
+						.addComponent(textEditorial, GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE)
+						.addComponent(textAutor, GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE)
+						.addComponent(textTitulo, GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE)
+						.addComponent(textISBN, GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE))
+					.addGap(99)
+					.addComponent(labelicon, GroupLayout.PREFERRED_SIZE, 161, GroupLayout.PREFERRED_SIZE)
+					.addGap(74))
 		);
 		gl_panelLibro.setVerticalGroup(
 			gl_panelLibro.createParallelGroup(Alignment.TRAILING)
@@ -188,23 +208,26 @@ public class UI extends JFrame {
 							.addGroup(gl_panelLibro.createParallelGroup(Alignment.BASELINE)
 								.addComponent(textPrecio, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 								.addComponent(lblPrecio)))
+						.addComponent(labelicon, GroupLayout.PREFERRED_SIZE, 172, GroupLayout.PREFERRED_SIZE))
+					.addGap(18)
+					.addGroup(gl_panelLibro.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblCantidad)
+						.addComponent(Spinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addGap(27)
+					.addComponent(label)
+					.addGroup(gl_panelLibro.createParallelGroup(Alignment.TRAILING, false)
 						.addGroup(gl_panelLibro.createSequentialGroup()
-							.addComponent(labelicon, GroupLayout.PREFERRED_SIZE, 172, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-					.addGap(10)
-					.addGroup(gl_panelLibro.createParallelGroup(Alignment.LEADING, false)
-						.addGroup(Alignment.TRAILING, gl_panelLibro.createSequentialGroup()
-							.addPreferredGap(ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
-							.addComponent(lblFortmato, GroupLayout.PREFERRED_SIZE, 15, GroupLayout.PREFERRED_SIZE))
-						.addComponent(panelFormato, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(gl_panelLibro.createParallelGroup(Alignment.TRAILING)
+							.addGap(6)
+							.addComponent(panelFormato, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addGap(18)
+							.addComponent(panelEstado, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addGap(24))
 						.addGroup(gl_panelLibro.createSequentialGroup()
-							.addComponent(label)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(lblEstado, GroupLayout.PREFERRED_SIZE, 15, GroupLayout.PREFERRED_SIZE))
-						.addComponent(panelEstado, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGap(14))
+							.addGap(18)
+							.addComponent(lblFortmato, GroupLayout.PREFERRED_SIZE, 15, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(lblEstado, GroupLayout.PREFERRED_SIZE, 15, GroupLayout.PREFERRED_SIZE)
+							.addGap(33))))
 		);
 
 		rdbtnReedicion = new JRadioButton("Reedici\u00F3n");
@@ -238,7 +261,7 @@ public class UI extends JFrame {
 		panelFormato.add(rdbtnEspiral);
 		panelLibro.setLayout(gl_panelLibro);
 
-		JPanel panelEstenteria = new JPanel();
+		panelEstenteria = new JPanel();
 		tabbedPane.addTab("ESTENTERIA", null, panelEstenteria, null);
 
 		JScrollPane scrollPane = new JScrollPane();
@@ -266,20 +289,32 @@ public class UI extends JFrame {
 
 		btnGuardar = new JButton("GUARDAR");
 
-		btnSalir = new JButton("SALIR");
-		btnSalir.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-			}
-		});
-
-		btnBorrar = new JButton("BORRAR");
-
 		btnConsultar = new JButton("CONSULTAR");
 		panel_3.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		panel_3.add(btnGuardar);
 		panel_3.add(btnConsultar);
-		panel_3.add(btnBorrar);
-		panel_3.add(btnSalir);
+		
+		btnEditar = new JButton("EDITAR");
+		
+		panel_3.add(btnEditar);
+		
+		btnBorrarCantidad = new JButton("BORRAR CANTIDAD");
+
+		panel_3.add(btnBorrarCantidad);
+		
+		btnAnadirCantidad = new JButton("ANADIR CANTIDAD");
+
+		panel_3.add(btnAnadirCantidad);
+		
+				btnSalir = new JButton("SALIR");
+				btnSalir.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						dispose();
+					}
+				});
+				
+						btnBorrar = new JButton("BORRAR");
+						panel_3.add(btnBorrar);
+				panel_3.add(btnSalir);
 	}
 }

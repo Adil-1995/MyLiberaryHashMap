@@ -1,7 +1,10 @@
 package controllador;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
@@ -21,18 +24,26 @@ public class ParaUI extends UI {
 	private static final long serialVersionUID = 1L;
 	Libreria libreria = new Libreria();
 	Libros libro;
+
 	public ParaUI() {
+		textISBN.addKeyListener(new KeyAdapter() {
+			public void keyReleased(KeyEvent e) {
+				textISBN.setForeground(Color.RED);
+				if (validaciones.validateISBN(textISBN.getText())) {
+					textISBN.setForeground(Color.GREEN);
+				}
+			}
+		});
 
 		btnGuardar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (validaciones.validateISBN(textISBN.getText()) && validaciones.
-						validateLetters(textAutor.getText())&& validaciones.
-						validateLetters(textEditorial.getText())
+				if (validaciones.validateISBN(textISBN.getText()) && validaciones.validateLetters(textAutor.getText())
+						&& validaciones.validateLetters(textEditorial.getText())
 						&& validaciones.isNumber(textPrecio.getText())) {
 
-					libreria.anadirLibros(textISBN.getText(), libro);
-					libreria.llenarTabla(tablaLibros);
 					crearLibro();
+					libreria.rellenarTabla(tablaLibros);
+
 					vaciarCampos();
 
 					JOptionPane.showMessageDialog(null, "Perfect");
@@ -44,10 +55,33 @@ public class ParaUI extends UI {
 			}
 		});
 
+		btnBorrarCantidad.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int indice = tablaLibros.getSelectedRow();
+				if (indice < 0) {
+					JOptionPane.showMessageDialog(null, "Ningun libro selecionado");
+				} else {
+					String cantidad = JOptionPane.showInputDialog("¿Cunatas Cantidades Quieres Borrar?");
+					if (cantidad != null && !cantidad.equals("") && Integer.valueOf(cantidad) > 0) {
+						libreria.borrarEjemplares((String) tablaLibros.getValueAt(indice, 0),
+								Integer.valueOf(cantidad));
+						libreria.rellenarTabla(tablaLibros);
+						JOptionPane.showMessageDialog(null, "Se han Borrado correctamente");
+					} else {
+						JOptionPane.showMessageDialog(null, "La cantidad debe ser mayor a cero");
+
+					}
+
+				}
+
+			}
+
+		});
+
 		btnBorrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				libreria.borrarLibros(libreria.obtenerIdSelecionado(tablaLibros));
-				libreria.llenarTabla(tablaLibros);
+				libreria.rellenarTabla(tablaLibros);
 				JOptionPane.showMessageDialog(null, "Libro Borrado");
 			}
 		});
@@ -55,6 +89,18 @@ public class ParaUI extends UI {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				JOptionPane.showMessageDialog(null, getLibroSeleccionado(tablaLibros));
+			}
+		});
+
+		btnEditar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+ 
+				tabbedPane.setSelectedIndex(0);
+				mostrarCampos(libreria.getLibroConcreto(libreria.obtenerISBNconcreto(tablaLibros.getSelectedRow())));
+				textISBN.setEnabled(false);
+				libreria.borrarLibros(libreria.obtenerISBNconcreto(tablaLibros.getSelectedRow()));
+				//textISBN.setEnabled(true);
+				
 			}
 		});
 
@@ -68,13 +114,35 @@ public class ParaUI extends UI {
 			}
 		});
 
+		btnAnadirCantidad.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int indice = tablaLibros.getSelectedRow();
+				if (indice < 0) {
+					JOptionPane.showMessageDialog(null, "Ningun libro selecionado");
+				} else {
+					String cantidad = JOptionPane.showInputDialog("¿Cunatas Cantidades Quieres Añadir?");
+					if (cantidad != null && !cantidad.equals("") && Integer.valueOf(cantidad) > 0) {
+						libreria.anadirEjemplares((String) tablaLibros.getValueAt(indice, 0),
+								Integer.valueOf(cantidad));
+						libreria.rellenarTabla(tablaLibros);
+						JOptionPane.showMessageDialog(null, "Se han añadido correctamente");
+					} else {
+						JOptionPane.showMessageDialog(null, "La cantidad debe ser mayor a cero");
+
+					}
+
+				}
+
+			}
+		});
+
 	}
 
 	private void crearLibro() {
-	 Libros libro = new Libros(textISBN.getText(), textTitulo.getText(), textAutor.getText(),
-			textEditorial.getText(), Float.parseFloat(textPrecio.getText()), getRadioButtonFormato(),
-				getRadioButtonEstado());
-		libreria.anadirLibros(textISBN.getText(),libro);
+		Libros libro = new Libros(textISBN.getText(), textTitulo.getText(), textAutor.getText(),
+				textEditorial.getText(), Float.parseFloat(textPrecio.getText()), getRadioButtonFormato(),
+				getRadioButtonEstado(), Integer.parseInt(Spinner.getValue().toString()));
+		libreria.anadirLibros(textISBN.getText(), libro);
 	}
 
 	public String getRadioButtonFormato() {
@@ -124,7 +192,19 @@ public class ParaUI extends UI {
 		textTitulo.setText("");
 		textPrecio.setText("");
 		textEditorial.setText("");
-		rdbtnCartone.setSelected(false);
+		rdbtnCartone.setSelected(true);
+		Spinner.setValue(0);
+
+	}
+
+	private void mostrarCampos(Libros libro) {
+		textISBN.setText(libro.getIsbn());
+		textAutor.setText(libro.getAuthor());
+		textTitulo.setText(libro.getTítulo());
+		textEditorial.setText(libro.getEditorial());
+		textPrecio.setText(String.valueOf(libro.getPrice()));
+		rdbtnCartone.setSelected(true);
+		Spinner.setValue(0);
 
 	}
 
